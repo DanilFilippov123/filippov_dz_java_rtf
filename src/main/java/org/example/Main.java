@@ -18,7 +18,18 @@ public class Main {
             System.out.println("Введено некоректное значение!");
             System.exit(1);
         }
-        ProductGenerator.generate(count).forEach(Product::buy);
+
+
+        var products = ProductGenerator.generate(count);
+        products.forEach(Product::buy);
         System.out.println("Купленно "+Product.getSold()+" товаров\nИз них "+Telephone.getSoldTelephone()+" телефонов и "+Chair.getSoldChair()+" стульев.");
+        System.out.println("Нажмите любую клавишу для использованния");
+        scanner.next();
+        products.forEach(Product::use);
+        for(Product product : products) {
+            System.out.println("Цена товара: "+product);
+        }
+        int commonPrice = products.stream().mapToInt(Product::getPrice).sum();
+        System.out.println("Общая цена: "+commonPrice);
     }
 }

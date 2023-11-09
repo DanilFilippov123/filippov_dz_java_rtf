@@ -1,24 +1,29 @@
 package org.example;
 
-import java.util.Random;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public abstract class ProductGenerator {
-    protected static Random random = new Random();
-    public static Product oneProductGenerator() {
-        if(random.nextDouble() > 0.5) {
-            return new Telephone(random.nextInt(1000));
-        } else {
-            return new Chair(random.nextInt(500));
+public interface ProductGenerator {
+    /**
+     * @param count Количество продуктов
+     * @param generator Функция вызываемая для генерации продуктов
+     * @return Stream продуктов
+     */
+    static List<Product> generate(Supplier<Product> generator, int count) {
+        if(count <= 0) {
+            throw new IllegalArgumentException("Count меньше либо равен нулю");
         }
+        return Stream.generate(generator).limit(count).collect(Collectors.toList());
     }
 
     /**
-     * Поток случайных элементов, решил сделать именно потоком, они мне нравятся <3
-     * @param count Количество продуктов
-     * @return Stream продуктов
+     * Дефолтный случайный (50/50) генератор для Стульев и Телефонов
+     * @param count Количество элементов
+     * @return List сгенерированных элементов
      */
-    public static Stream<Product> generate(int count) {
-        return Stream.generate(ProductGenerator::oneProductGenerator).limit(count);
+    static List<Product> generate(int count) {
+        return ProductGenerator.generate(new FiftyFiftyProductGenerator(), count);
     }
 }
